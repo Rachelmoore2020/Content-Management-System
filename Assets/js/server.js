@@ -106,7 +106,7 @@ const askNext = () => {
 };
 
 // View employees, roles and depts
-// -----------------------------------------------//
+// -----------------------------------------------// and
 
 const viewAllEmp = () => {
   connection.query("SELECT first_name, last_name FROM employee", (err, res) => {
