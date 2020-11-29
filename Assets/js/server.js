@@ -14,6 +14,7 @@ connection.connect((err) => {
   start();
 });
 
+// -----------------Beginning Prompt-------------------
 const start = () => {
   inquirer
     .prompt({
@@ -60,6 +61,8 @@ const start = () => {
       }
     });
 };
+
+// --------------------Next Prompt-----------------------
 const askNext = () => {
   inquirer
     .prompt({
@@ -117,7 +120,6 @@ const viewAllEmp = () => {
     askNext();
   }); 
 }   
-
 const viewRole = () => {
   connection.query("SELECT title FROM empRole", (err, res) => {
     if (err) throw err;
@@ -135,8 +137,6 @@ const viewDept = () => {
 
 // Add employees, roles and depts
 // -----------------------------------------------//
-
-
 const addEmp = () => {
   inquirer.prompt([
     
@@ -221,7 +221,7 @@ console.log(answers);
     connection.query("SELECT id, title, salary, dept_id FROM empRole", (err, res) => {
       if (err) throw err;
       console.log("All of the roles are: ", res);
-      askNext();
+      moreRole();
     }); 
 });
   })
@@ -253,12 +253,11 @@ console.log(answers);
     connection.query("SELECT id, deptName FROM department", (err, res) => {
       if (err) throw err;
       console.log("All of the departments are: ", res);
-      askNext();
+      moreDept();
     }); 
 });
   })
 }
-
 
 // Add another employee
 const moreEmp = () => {
@@ -280,3 +279,46 @@ const moreEmp = () => {
 
   })
  };
+ // Add another role
+const moreRole = () => {
+  inquirer.prompt([
+   
+    {
+      type: 'list',
+      name: 'moreRole',
+      message: 'Do you want to add another role',
+      choices: ["yes", "no"]
+    }
+      ])
+    .then(answers => {
+      if(answers.moreEmployees === "yes") {
+      addRole()
+    } else {
+      askNext()
+    }
+
+  })
+ };
+// Add another department
+ const moreDept = () => {
+  inquirer.prompt([
+   
+    {
+      type: 'list',
+      name: 'moreRole',
+      message: 'Do you want to add another department?',
+      choices: ["yes", "no"]
+    }
+      ])
+    .then(answers => {
+      if(answers.moreEmployees === "yes") {
+      addDept()
+    } else {
+      askNext()
+    }
+
+  })
+ };
+
+
+//  Update Employee Role
