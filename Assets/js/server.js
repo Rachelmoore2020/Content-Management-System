@@ -1,5 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const cTable = require('console.table');
+
 const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
@@ -67,8 +69,8 @@ const askNext = () => {
       choices: [
         'View All Employees',
         'View All Roles',
-        'View all Departments',
-        'Add Employee',
+        'View All Departments',
+        'Add an Employee',
         'Add A Department',
         'Add A Role',
         'Update Employee Role',
@@ -81,10 +83,10 @@ const askNext = () => {
           viewAllEmp();
           break;
         case 'View All Roles':
-          viewEmpByDept();
+          viewRole();
           break;
         case 'View all Departments':
-          viewEmpByDept();
+          viewDept();
           break;
         case 'Add Employee':
           addEmp();
@@ -98,7 +100,7 @@ const askNext = () => {
           case 'Update Employee Role':
           updateEmpRole();
           break;
-        case 'exit':
+        case 'Exit':
           connection.end();
           break;
       }
@@ -112,47 +114,122 @@ const viewAllEmp = () => {
   connection.query("SELECT first_name, last_name FROM employee", (err, res) => {
     if (err) throw err;
     console.log("All of the employees are: ", res);
-    
-  });
-  askNext();    
+    askNext();
+  }); 
 }   
 
 const viewRole = () => {
   connection.query("SELECT title FROM empRole", (err, res) => {
     if (err) throw err;
     console.log("All of the roles are: ", res);
-    
-  });
-  askNext();    
+    askNext();  
+  });   
 }   
 const viewDept = () => {
   connection.query("SELECT deptName FROM department", (err, res) => {
     if (err) throw err;
     console.log("All of the departments are: ", res);
-    
-  });
-  askNext();    
+    askNext(); 
+  }) 
 }  
 
 // Add employees, roles and depts
 // -----------------------------------------------//
+
+
 const addEmp = () => {
-  connection.query("SELECT first_name, last_name FROM employee", (err, res) => {
-    if (err) throw err;
-    console.log("All of the employees are: ", res);
+  inquirer.prompt([
     
-  });
-  askNext();    
-}   
+    {
+      type: 'input',
+      name: 'firstname',
+      message: 'What is the employees first name?'
+    },
+    {
+      type: 'input',
+      name: 'lastname',
+      message: 'What is the employees last name?'
+    },
+    {
+      type: 'input',
+      name: 'roleid',
+      message: 'What is the employees role id?'
+    },
+    {
+      type: 'input',
+      name: 'mgrid',
+      message: 'What is the employees manager id?'
+    }
+
+  ]) .then(function(answers) {
+console.log(answers);
+  connection.query("INSERT INTO employee SET ?", {
+    first_name: answers.firstname,
+    last_name: answers.lastname,
+    role_id: answers.roleid, 
+    mgr_id: answers.mgrid
+  }, 
+  function(err) {
+    if (err) throw err;
+    console.log("Employee was added!", );
+
+    connection.query("SELECT first_name, last_name FROM employee", (err, res) => {
+      if (err) throw err;
+      console.log("All of the employees are: ", res);
+      askNext();
+    });
+    askNext();  
+});
+  })
+}
+
+
 
 const addRole = () => {
-  connection.query("SELECT title FROM empRole", (err, res) => {
+  inquirer.prompt([
+    {
+      type: 'input',
+      name: 'id',
+      message: 'What is the id?'
+    },
+    {
+      type: 'input',
+      name: 'title',
+      message: 'What is the employees role?'
+    },
+    {
+      type: 'input',
+      name: 'salary',
+      message: 'What is the employees salary?'
+    },
+    {
+      type: 'input',
+      name: 'dept_id',
+      message: 'What is the employees department id?'
+    }
+
+  ]) .then(function(answers) {
+console.log(answers);
+  connection.query("INSERT INTO empRole SET ?", {
+    id: answers.id,
+    title: answers.title,
+    salary: answers.salary, 
+    dept_id: answers.dept_id
+  }, 
+  function(err) {
     if (err) throw err;
-    console.log("All of the roles are: ", res);
-    
-  });
-  askNext();    
-}   
+    console.log("Role was added!", );
+
+    connection.query("SELECT id, title, salary, dept_id FROM empRole", (err, res) => {
+      if (err) throw err;
+      console.log("All of the roles are: ", res);
+      askNext();
+    }); 
+});
+  })
+}
+
+ 
 const addDept = () => {
   connection.query("SELECT deptName FROM department", (err, res) => {
     if (err) throw err;
@@ -175,3 +252,4 @@ const addDept = () => {
 //       ])
 //     .then(answers => {
 //       if(answers.moreEmployees === "yes") {
+
