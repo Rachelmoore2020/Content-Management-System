@@ -176,14 +176,12 @@ console.log(answers);
     connection.query("SELECT first_name, last_name FROM employee", (err, res) => {
       if (err) throw err;
       console.log("All of the employees are: ", res);
-      askNext();
+      moreEmp();
     });
-    askNext();  
+     
 });
   })
 }
-
-
 
 const addRole = () => {
   inquirer.prompt([
@@ -218,7 +216,7 @@ console.log(answers);
   }, 
   function(err) {
     if (err) throw err;
-    console.log("Role was added!", );
+    console.log("Role was added!");
 
     connection.query("SELECT id, title, salary, dept_id FROM empRole", (err, res) => {
       if (err) throw err;
@@ -229,27 +227,56 @@ console.log(answers);
   })
 }
 
- 
 const addDept = () => {
-  connection.query("SELECT deptName FROM department", (err, res) => {
+  inquirer.prompt([
+    {
+      type: 'input',
+      name: 'id',
+      message: 'What is the id?'
+    },
+    {
+      type: 'input',
+      name: 'deptName',
+      message: 'What is the department name?'
+    }
+
+  ]) .then(function(answers) {
+console.log(answers);
+  connection.query("INSERT INTO department SET ?", {
+    id: answers.id,
+    deptName: answers.deptName
+  }, 
+  function(err) {
     if (err) throw err;
-    console.log("All of the departments are: ", res);
-    
-  });
-  askNext();    
-} 
+    console.log("Department was added!");
+
+    connection.query("SELECT id, deptName FROM department", (err, res) => {
+      if (err) throw err;
+      console.log("All of the departments are: ", res);
+      askNext();
+    }); 
+});
+  })
+}
+
 
 // Add another employee
-// const moreEmp = () => {
-//   inquirer.prompt([
+const moreEmp = () => {
+  inquirer.prompt([
    
-//     {
-//       type: 'list',
-//       name: 'moreEmployees',
-//       message: 'Do you want to add another employee',
-//       choices: ["yes", "no"]
-//     }
-//       ])
-//     .then(answers => {
-//       if(answers.moreEmployees === "yes") {
+    {
+      type: 'list',
+      name: 'moreEmployees',
+      message: 'Do you want to add another employee',
+      choices: ["yes", "no"]
+    }
+      ])
+    .then(answers => {
+      if(answers.moreEmployees === "yes") {
+      addEmp()
+    } else {
+      askNext()
+    }
 
+  })
+ };
