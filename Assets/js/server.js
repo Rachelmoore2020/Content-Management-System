@@ -383,7 +383,7 @@ const updateEmpRole = () => {
           .then((answer) => {
             let roleNum = answer.newRole;
             console.log(roleNum);
-            connection.query('UPDATE employee SET ? WHERE ?'
+            connection.query('UPDATE employee SET ? WHERE ?',
             [
               {
                 role_id: roleNum
@@ -391,8 +391,7 @@ const updateEmpRole = () => {
               {
                 id: chosenPerson
               }
-            ]
-          )
+            ])
       });
   });
 })
