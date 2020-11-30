@@ -114,16 +114,16 @@ const askNext = () => {
 // -----------------------------------------------// and
 
 const viewAllEmp = () => {
-  connection.query("SELECT first_name, last_name FROM employee", (err, res) => {
+  connection.query("SELECT * FROM employee", (err, res) => {
     if (err) throw err;
-    console.log("All of the employees are: ", res);
+    console.table("All of the employees are: ", res);
     askNext();
   }); 
 }   
 const viewRole = () => {
   connection.query("SELECT title FROM empRole", (err, res) => {
     if (err) throw err;
-    console.log("All of the roles are: ", res);
+    console.table("All of the roles are: ", res);
     askNext();  
   });   
 }   
@@ -322,3 +322,53 @@ const moreRole = () => {
 
 
 //  Update Employee Role
+const updateEmpRole = () => {
+  connection.query('SELECT * FROM employee', (err, results) => { 
+    if (err) throw err;
+    console.table(results);
+    
+    // once you have the roles, prompt the user for which they'd like to update
+    inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'name',
+          message: "Enter the id of the employee who's role you would like to update"
+        },
+        // {
+        //   name: "choice",
+        //   type: "rawlist",
+        //   // choices: function() {
+        //   //   var choiceArray = [];
+        //   //   for (var i = 0; i < results.length; i++) {
+        //   //     choiceArray.push(results[i].last_name);
+        //   //   }
+        //   //   return choiceArray;
+          
+        //   // },
+        //   message: "Enter the id of the employee who's role you would like to update"
+        // },
+      ])
+      .then((answer) => {
+        // get the information of the chosen person
+        var chosenPerson = (answer.name);
+        console.log(chosenPerson);
+
+        inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'newRole',
+          message: "What is their new role id?"
+        },
+      ])
+      .then((answer) => {
+        let roleNum =  (answer.newRole)
+      console.log(roleNum)
+      })
+      // connection.query(SELECT * FROM employee WHERE ? )
+
+      })
+    
+  })
+}
