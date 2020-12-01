@@ -2,6 +2,8 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 const figlet = require("figlet");
+const fs = require('fs');
+
 
 // figlet('Employee Tracker', (err, result) => {
 //   console.log(err || result)
@@ -70,6 +72,7 @@ const start = () => {
           updateEmpRole();
           break;
         case "exit":
+          console.log("Thank you for using Employee Tracker!")
           connection.end();
           break;
       }
@@ -118,6 +121,8 @@ const askNext = () => {
           updateEmpRole();
           break;
         case "Exit":
+          console.log("Thank you for using Employee Tracker!")
+
           connection.end();
           break;
       }
@@ -392,6 +397,13 @@ const updateEmpRole = () => {
                 id: chosenPerson
               }
             ])
+            console.log("Employee role was updated!")
+              connection.query("SELECT * FROM employee", (err, res) => {
+                if (err) throw err;
+                console.table("All of the employees are: ", res);
+                askNext();
+              });
+            
       });
   });
 })
