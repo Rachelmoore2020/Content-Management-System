@@ -41,6 +41,9 @@ const start = () => {
         "Add A Department",
         "Add A Role",
         "Update Employee Role",
+        "Delete an Employee",
+        "Delete a Department",
+        "Delete a Role",
         "exit",
       ],
     })
@@ -67,10 +70,28 @@ const start = () => {
         case "Update Employee Role":
           updateEmpRole();
           break;
+        case "Delete an Employee":
+          delEmp();
+          break;
+        case "Delete a Department":
+          delDept();
+          break;
+        case "Delete a Role":
+          delRole();
+          break;
         case "exit":
           console.log("Thank you for using Employee Tracker!")
+          figlet("Employee Tracker", (err, result) => {
+            console.log(err || result);
+            return new Promise((resolve, reject) => {
+              setTimeout(function () {
+                resolve();
+              }, 300);
+            });
+          });
           connection.end();
           break;
+          
       }
     });
 };
@@ -90,6 +111,9 @@ const askNext = () => {
         "Add A Department",
         "Add A Role",
         "Update Employee Role",
+        "Delete an Employee",
+        "Delete a Department",
+        "Delete a Role",
         "exit",
       ],
     })
@@ -116,9 +140,25 @@ const askNext = () => {
         case "Update Employee Role":
           updateEmpRole();
           break;
+          case "Delete an Employee":
+            delEmp();
+            break;
+            case "Delete a Department":
+            delDept();
+            break;
+            case "Delete a Role":
+            delRole();
+            break;
         case "Exit":
           console.log("Thank you for using Employee Tracker!")
-
+          figlet("Employee Tracker", (err, result) => {
+            console.log(err || result);
+            return new Promise((resolve, reject) => {
+              setTimeout(function () {
+                resolve();
+              }, 300);
+            });
+          });
           connection.end();
           break;
       }
@@ -152,66 +192,55 @@ const viewDept = () => {
 
 // Add employees, roles and depts
 // -----------------------------------------------//
-const addEmp = () => {
-  var roleChoices;
-   connection.query("SELECT id FROM empRole", (err, res) => {
-    if (err) throw err;
-    roleChoices = res})
-  console.log(roleChoices)
-  // var roleChoice = roleChoices.map(({id}) => {
-  //   ({value:id})
-  // })
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "firstname",
-        message: "What is the employees first name?",
-      },
-      {
-        type: "input",
-        name: "lastname",
-        message: "What is the employees last name?",
-      },
-      {
-        type: "list",
-        name: "roleid",
-        message: "What is the employees role id?",
-        choices: [roleChoices]
-      },
-      {
-        type: "input",
-        name: "mgrid",
-        message: "What is the employees manager id?",
-      },
-    ])
-    .then(function (answers) {
-      console.table(answers);
-      connection.query(
-        "INSERT INTO employee SET ?",
-        {
-          first_name: answers.firstname,
-          last_name: answers.lastname,
-          role_id: answers.roleid,
-          mgr_id: answers.mgrid,
-        },
-        function (err) {
+addEmp = () => {
+  //read the employees first
+  connection.query("SELECT * FROM empRole", async (err, res) => {
+      if (err) throw err;
+
+      const answers = await inquirer.prompt([
+          {
+              type: "input",
+              name: "first",
+              message: "What is the Employee's first name?"
+          },
+          {
+              type: "input",
+              name: "last",
+              message: "What is the Employee's last name?"
+          },
+          {
+              type: "list",
+              name: "role",
+              message: "What is the Employee's role?",
+              choices: () => {
+                  let choiceArray = [];
+                  for (let i = 0; i < res.length; i++) {
+                      choiceArray.push(res[i].id);
+                  }
+                  return choiceArray;
+              }
+          },
+          {
+              type: "list",
+              name: "manager",
+              message: "What is the manager's ID?",
+              choices: [
+                  0, 1, 2, 3, 4, 5
+              ]
+          }
+      ]);
+      connection.query("INSERT INTO employee SET ?", {
+          first_name: answers.first,
+          last_name: answers.last,
+          role_id: answers.role,
+          mgr_id: answers.manager
+      }, (err) => {
           if (err) throw err;
           console.log("Employee was added!");
-
-          connection.query(
-            "SELECT first_name, last_name FROM employee",
-            (err, res) => {
-              if (err) throw err;
-              console.table("All of the employees are: ", res);
-              moreEmp();
-            }
-          );
-        }
-      );
-    });
+          moreEmp();
+      });
+  })
 };
-
 const addRole = () => {
   inquirer
     .prompt([
@@ -254,7 +283,7 @@ const addRole = () => {
             "SELECT id, title, salary, dept_id FROM empRole",
             (err, res) => {
               if (err) throw err;
-              console.log("All of the roles are: ", res);
+              console.table("All of the roles are: ", res);
               moreRole();
             }
           );
@@ -333,7 +362,7 @@ const moreRole = () => {
       },
     ])
     .then((answers) => {
-      if (answers.moreEmployees === "yes") {
+      if (answers.moreRole === "yes") {
         addRole();
       } else {
         askNext();
@@ -352,7 +381,7 @@ const moreDept = () => {
       },
     ])
     .then((answers) => {
-      if (answers.moreEmployees === "yes") {
+      if (answers.moreRole === "yes") {
         addDept();
       } else {
         askNext();
@@ -381,17 +410,27 @@ const updateEmpRole = () => {
         var chosenPerson = answer.name;
         console.log(chosenPerson);
 
+        connection.query("SELECT * FROM empRole", async (err, res) => {
+          if (err) throw err;
         // get the new role number
         inquirer
           .prompt([
             {
-              type: "input",
-              name: "newRole",
-              message: "What is their new role id?",
-            },
+              type: "list",
+              name: "role",
+              message: "What is the Employee's new role id?",
+              choices: () => {
+                  let choiceArray = [];
+                  for (let i = 0; i < res.length; i++) {
+                      choiceArray.push(res[i].id);
+                  }
+                  return choiceArray;
+              }
+          },
           ])
+
           .then((answer) => {
-            let roleNum = answer.newRole;
+            let roleNum = answer.role;
             console.log(roleNum);
             connection.query('UPDATE employee SET ? WHERE ?',
             [
@@ -408,8 +447,43 @@ const updateEmpRole = () => {
                 console.table("All of the employees are: ", res);
                 askNext();
               });
-            
       });
   });
 })
 }
+)}
+
+//  ----------- Delete -------------  //
+
+const delEmp = () => {
+  connection.query("SELECT * FROM employee", (err, results) => {
+    if (err) throw err;
+    console.table(results);
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "name",
+          message:
+            "Enter the id of the employee who's role you would like to delete",
+        },
+      ])
+      .then((answer) => {
+        // get the chosen person
+        var chosenPerson = answer.name;
+        console.log(chosenPerson);
+        connection.query('DELETE FROM employee WHERE ?',
+            [
+              {
+                id: chosenPerson
+              }
+            ])
+            console.log("Employee was deleted!")
+              connection.query("SELECT * FROM employee", (err, res) => {
+                if (err) throw err;
+                console.table("All of the employees are: ", res);
+                askNext();
+              });
+      });
+    }
+  )}
