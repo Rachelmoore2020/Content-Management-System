@@ -5,14 +5,14 @@ const figlet = require("figlet");
 const fs = require('fs');
 
 
-figlet("Employee Tracker", (err, result) => {
-  console.log(err || result);
-  return new Promise((resolve, reject) => {
-    setTimeout(function () {
-      resolve();
-    }, 300);
-  });
-});
+console.log(figlet.textSync('Employee Tracker', {
+  font: 'Standard',
+  horizontalLayout: 'default',
+  verticalLayout: 'default',
+  width: 80,
+  whitespaceBreak: true
+}));
+
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -243,30 +243,41 @@ const addEmp = () => {
   })
 };
 const addRole = () => {
+  connection.query(
+    "SELECT * FROM empRole",
+    (err, res) => {
+      if (err) throw err;
+      console.table("All of the current roles are: ", res);
+    })
+  
   inquirer
     .prompt([
       {
         type: "input",
         name: "title",
-        message: "What is the employees role?",
+        message: "What is the new role?",
       },
       {
         type: "input",
         name: "salary",
-        message: "What is the employees salary?",
+        message: "What is the salary?",
       },
       {
         type: "input",
         name: "dept_id",
-        message: "What is the employees department id?",
+        message: "What is the department id?",
       },
     ])
     .then(function (answers) {
-      console.table(answers);
-      connection.query(
+      connection.query("SELECT id FROM empRole",
+      (err, res) => {
+        if (err) throw err;
+        let numOfIds = res.length + 1
+        
+        connection.query(
         "INSERT INTO empRole SET ?",
         {
-          id: answers.id,
+          id: numOfIds,
           title: answers.title,
           salary: answers.salary,
           dept_id: answers.dept_id,
@@ -286,6 +297,8 @@ const addRole = () => {
         }
       );
     });
+  })
+
 };
 
 const addDept = () => {
