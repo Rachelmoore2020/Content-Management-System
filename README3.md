@@ -19,6 +19,7 @@
 * [Testing](#what-command-should-be-run-to-run-tests)
 * [License](#what-license-is-the-application-covered-under)
 * [Questions](#questions)
+* [Demonstration](#demonstration)
     
 
 ## Description:
@@ -50,6 +51,10 @@ So that I can organize and plan my business
 ## Questions:
 For questions about Node File Generator, visit my GitHub page:
     Rachelmoore2020
+    
+## Demonstration
+![Employee tracker](https://user-images.githubusercontent.com/68473729/101071079-1defea80-356a-11eb-87fe-1de337230fe6.gif)
+
   
   ## You may also contact me via email at:
   rachelmoore6822@gmail.com
