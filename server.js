@@ -243,19 +243,13 @@ const addEmp = () => {
   })
 };
 const addRole = () => {
-  connection.query(
-    "SELECT * FROM empRole",
-    (err, res) => {
-      if (err) throw err;
-      console.table("All of the current roles are: ", res);
-    })
   
   inquirer
     .prompt([
       {
         type: "input",
         name: "title",
-        message: "What is the new role?",
+        message: "What is the new title?",
       },
       {
         type: "input",
