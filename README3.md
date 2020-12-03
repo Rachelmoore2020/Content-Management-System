@@ -24,9 +24,11 @@
 
 ## User Story:
     As a business owner
+I want to be able to view and manage the departments, roles, and employees in my company
+So that I can organize and plan my business
 
 ## What command should be run to install dependencies?
-    So that I can organize and plan my businessnpm i
+    npm i
 
 ## What does the user need to know about using the repo?
     nothing
@@ -41,7 +43,7 @@
     npm run test
 
 ## What license is the application covered under?
-    
+    none
 
 ## Questions:
 For questions about Node File Generator, visit my GitHub page:
