@@ -247,11 +247,6 @@ const addRole = () => {
     .prompt([
       {
         type: "input",
-        name: "id",
-        message: "What is the id?",
-      },
-      {
-        type: "input",
         name: "title",
         message: "What is the employees role?",
       },
@@ -301,8 +296,9 @@ const addDept = () => {
         name: "deptName",
         message: "What is the new department name?",
       },
-    
-    connection.query("SELECT id FROM department",
+    ]).then(answers => {
+      // Here you can process your user answer(s)
+      connection.query("SELECT id FROM department",
       (err, res) => {
         if (err) throw err;
         let numOfIds = res.length + 1
@@ -321,14 +317,16 @@ const addDept = () => {
             "SELECT id, deptName FROM department",
             (err, res) => {
               if (err) throw err;
-              console.log("All of the departments are: ", res);
+              console.table("All of the departments are: ", res);
               moreDept();
             }
           );
         }
       );
+    });
+    
   })
-])
+
 
 }
 
