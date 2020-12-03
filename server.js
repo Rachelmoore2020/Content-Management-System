@@ -107,7 +107,7 @@ const askNext = () => {
         "View All Employees",
         "View All Roles",
         "View All Departments",
-        "Add an Employee",
+        "Add Employee",
         "Add A Department",
         "Add A Role",
         "Update Employee Role",
@@ -140,16 +140,16 @@ const askNext = () => {
         case "Update Employee Role":
           updateEmpRole();
           break;
-          case "Delete an Employee":
-            delEmp();
-            break;
-            case "Delete a Department":
-            delDept();
-            break;
-            case "Delete a Role":
-            delRole();
-            break;
-        case "Exit":
+        case "Delete an Employee":
+          delEmp();
+          break;
+        case "Delete a Department":
+          delDept();
+          break;
+        case "Delete a Role":
+          delRole();
+          break;
+        case "exit":
           console.log("Thank you for using Employee Tracker!")
           figlet("Employee Tracker", (err, result) => {
             console.log(err || result);
@@ -161,6 +161,7 @@ const askNext = () => {
           });
           connection.end();
           break;
+          
       }
     });
 };
@@ -192,7 +193,7 @@ const viewDept = () => {
 
 // Add employees, roles and depts
 // -----------------------------------------------//
-addEmp = () => {
+const addEmp = () => {
   //read the employees first
   connection.query("SELECT * FROM empRole", async (err, res) => {
       if (err) throw err;
@@ -297,26 +298,24 @@ const addDept = () => {
     .prompt([
       {
         type: "input",
-        name: "id",
-        message: "What is the id?",
-      },
-      {
-        type: "input",
         name: "deptName",
-        message: "What is the department name?",
+        message: "What is the new department name?",
       },
-    ])
-    .then(function (answers) {
-      console.table(answers);
-      connection.query(
+    
+    connection.query("SELECT id FROM department",
+      (err, res) => {
+        if (err) throw err;
+        let numOfIds = res.length + 1
+          
+        connection.query(
         "INSERT INTO department SET ?",
         {
-          id: answers.id,
+          id: numOfIds,
           deptName: answers.deptName,
         },
         function (err) {
           if (err) throw err;
-          console.log("Department was added!");
+          console.log("New department was added!");
 
           connection.query(
             "SELECT id, deptName FROM department",
@@ -328,8 +327,11 @@ const addDept = () => {
           );
         }
       );
-    });
-};
+  })
+])
+
+}
+
 
 // Add another employee
 const moreEmp = () => {
@@ -478,7 +480,17 @@ const delEmp = () => {
                 id: chosenPerson
               }
             ])
+            
             console.log("Employee was deleted!")
+            connection.query("ALTER TABLE employee DROP id", (err, res) => {
+              if (err) throw err;
+            });
+            connection.query("ALTER TABLE employee AUTO_INCREMENT = 1", (err, res) => {
+              if (err) throw err;
+            });
+            connection.query("ALTER TABLE employee ADD id int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST", (err, res) => {
+              if (err) throw err;
+            });
               connection.query("SELECT * FROM employee", (err, res) => {
                 if (err) throw err;
                 console.table("All of the employees are: ", res);
@@ -487,3 +499,72 @@ const delEmp = () => {
       });
     }
   )}
+const delRole = () => {
+    connection.query("SELECT * FROM empRole", (err, results) => {
+      if (err) throw err;
+      console.table(results);
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            name: "name",
+            message:
+              "Enter the id of the role you would like to delete",
+          },
+        ])
+        .then((answer) => {
+          // get the chosen person
+          var chosenPerson = answer.name;
+          console.log(chosenPerson);
+          connection.query('DELETE FROM empRole WHERE ?',
+              [
+                {
+                  id: chosenPerson
+                }
+              ])
+              
+              console.log("Role was deleted!")
+             
+                connection.query("SELECT * FROM empRole", (err, res) => {
+                  if (err) throw err;
+                  console.table("All of the roles are: ", res);
+                  askNext();
+                });
+        });
+      }
+  )}
+const delDept = () => {
+      connection.query("SELECT * FROM department", (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              name: "name",
+              message:
+                "Enter the id of the department you would like to delete",
+            },
+          ])
+          .then((answer) => {
+            // get the chosen person
+            var chosenPerson = answer.name;
+            console.log(chosenPerson);
+            connection.query('DELETE FROM department WHERE ?',
+                [
+                  {
+                    id: chosenPerson
+                  }
+                ])
+                
+                console.log("department was deleted!")
+               
+                  connection.query("SELECT * FROM department", (err, res) => {
+                    if (err) throw err;
+                    console.table("All of the departments are: ", res);
+                    askNext();
+                  });
+          });
+        }
+  )}
+      
