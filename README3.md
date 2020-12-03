@@ -3,7 +3,8 @@
   # Employee Tracker
   
 ![image](https://user-images.githubusercontent.com/68473729/101070929-f567f080-3569-11eb-944f-5e91a977449e.png)
-  ![License](https://img.shields.io/badge/License--blue.svg "License Badge")
+
+![License](https://img.shields.io/badge/License--blue.svg "License Badge")
   
 
 
